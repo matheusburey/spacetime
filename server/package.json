@@ -12,6 +12,7 @@
   "devDependencies": {
     "@rocketseat/eslint-config": "^1.2.0",
     "@types/node": "^20.4.0",
+    "dotenv": "^16.3.1",
     "eslint": "^8.44.0",
     "prisma": "^4.16.2",
     "tsx": "^3.12.7",
@@ -19,7 +20,9 @@
   },
   "dependencies": {
     "@fastify/cors": "^8.4.1",
+    "@fastify/jwt": "^7.2.2",
     "@prisma/client": "^4.16.2",
+    "axios": "^1.6.0",
     "fastify": "^4.24.3",
     "zod": "^3.22.4"
   }
