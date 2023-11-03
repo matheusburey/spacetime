@@ -1,6 +1,9 @@
 import { StatusBar } from 'expo-status-bar'
 import { ImageBackground, Text, TouchableOpacity, View } from 'react-native'
 import * as SecureStore from 'expo-secure-store'
+import { styled } from 'nativewind'
+import { useAuthRequest, makeRedirectUri } from 'expo-auth-session'
+import { useEffect } from 'react'
 
 import { BaiJamjuree_700Bold } from '@expo-google-fonts/bai-jamjuree'
 import {
@@ -9,13 +12,11 @@ import {
   useFonts,
 } from '@expo-google-fonts/roboto'
 
-import blurBg from './src/assets/bg-blur.png'
-import Stripes from './src/assets/stripes.svg'
-import SpacetimeLogo from './src/assets/spacetime-logo.svg'
-import { styled } from 'nativewind'
-import { useAuthRequest, makeRedirectUri } from 'expo-auth-session'
-import { useEffect } from 'react'
-import { api } from './src/lib/api'
+import blurBg from '../src/assets/bg-blur.png'
+import Stripes from '../src/assets/stripes.svg'
+import SpacetimeLogo from '../src/assets/spacetime-logo.svg'
+import { api } from '../src/lib/api'
+import { useRouter } from 'expo-router'
 
 const StyledStripes = styled(Stripes)
 
@@ -27,6 +28,7 @@ const discovery = {
 }
 
 export default function App() {
+  const router = useRouter()
   const [hasLoadedFonts] = useFonts({
     Roboto_400Regular,
     Roboto_700Bold,
@@ -53,6 +55,7 @@ export default function App() {
         .then((response) => {
           const { token } = response.data
           SecureStore.setItemAsync('token', token)
+          router.push('/memories')
         })
         .catch((error) => {
           console.log(error)
