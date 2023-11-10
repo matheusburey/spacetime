@@ -9,6 +9,7 @@ export async function GET(req: NextRequest) {
 
   const registerResponse = await api.post('/register', {
     code,
+    origin: 'web',
   })
 
   const { token } = registerResponse.data
