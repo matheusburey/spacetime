@@ -1,17 +1,34 @@
-import { View, Text, TouchableOpacity, Switch } from 'react-native'
+import { View, Text, TouchableOpacity, Switch, Image } from 'react-native'
 import { Feather } from '@expo/vector-icons'
-
+import * as ImagePicker from 'expo-image-picker'
 import SpacetimeLogo from '../src/assets/spacetime-logo.svg'
 import { Link } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useState } from 'react'
 import { ScrollView, TextInput } from 'react-native-gesture-handler'
+
 export default function NewMemories() {
   const { bottom, top } = useSafeAreaInsets()
+  const [content, setContent] = useState('')
   const [isPublic, setIsPublic] = useState(false)
+  const [preview, setPreview] = useState('')
 
-  const saveMemory = () => {
-    console.log({ isPublic })
+  const openImagePicker = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      quality: 1,
+      selectionLimit: 1,
+    })
+
+    console.log(result)
+
+    if (result.assets[0]) {
+      setPreview(result.assets[0].uri)
+    }
+  }
+
+  const handleCreateMemory = () => {
+    console.log({ isPublic, content, preview })
   }
 
   return (
@@ -44,18 +61,29 @@ export default function NewMemories() {
 
         <TouchableOpacity
           activeOpacity={0.7}
+          onPress={openImagePicker}
           className="h-32 items-center justify-center rounded-lg border border-dashed border-gray-500 bg-black/20"
         >
-          <View className="flex-row items-center gap-2">
-            <Feather name="plus" size={16} color="#FFF" />
-            <Text className="font-body text-sm text-gray-200">
-              Adicionar imagem ou video de capa
-            </Text>
-          </View>
+          {preview ? (
+            // eslint-disable-next-line jsx-a11y/alt-text
+            <Image
+              source={{ uri: preview }}
+              className="h-full w-full rounded-lg object-cover"
+            />
+          ) : (
+            <View className="flex-row items-center gap-2">
+              <Feather name="plus" size={16} color="#FFF" />
+              <Text className="font-body text-sm text-gray-200">
+                Adicionar imagem ou video de capa
+              </Text>
+            </View>
+          )}
         </TouchableOpacity>
 
         <TextInput
           multiline
+          value={content}
+          onChangeText={setContent}
           className="font-body text-lg text-gray-50"
           placeholderTextColor="#56565a"
           placeholder="Fique livre para adicionar fotos, vídeos e relatos sobre essa experiência que você quer lembrar para sempre."
@@ -63,7 +91,7 @@ export default function NewMemories() {
 
         <TouchableOpacity
           activeOpacity={0.7}
-          onPress={saveMemory}
+          onPress={handleCreateMemory}
           className="items-center rounded-full bg-green-500 px-5 py-3"
         >
           <Text className="font-alt text-sm uppercase text-black">
