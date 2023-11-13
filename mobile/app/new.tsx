@@ -2,10 +2,12 @@ import { View, Text, TouchableOpacity, Switch, Image } from 'react-native'
 import { Feather } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
 import SpacetimeLogo from '../src/assets/spacetime-logo.svg'
-import { Link } from 'expo-router'
+import { Link, router } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useState } from 'react'
 import { ScrollView, TextInput } from 'react-native-gesture-handler'
+import * as SecureStore from 'expo-secure-store'
+import { api } from '../src/lib/api'
 
 export default function NewMemories() {
   const { bottom, top } = useSafeAreaInsets()
@@ -14,21 +16,58 @@ export default function NewMemories() {
   const [preview, setPreview] = useState('')
 
   const openImagePicker = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      quality: 1,
-      selectionLimit: 1,
-    })
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        quality: 1,
+        selectionLimit: 1,
+      })
 
-    console.log(result)
-
-    if (result.assets[0]) {
-      setPreview(result.assets[0].uri)
+      if (result.assets[0]) {
+        setPreview(result.assets[0].uri)
+      }
+    } catch (error) {
+      console.log(error)
     }
   }
 
-  const handleCreateMemory = () => {
-    console.log({ isPublic, content, preview })
+  const handleCreateMemory = async () => {
+    try {
+      const token = await SecureStore.getItemAsync('token')
+      let coverUrl = ''
+
+      if (preview) {
+        const uploadFormData = new FormData()
+
+        uploadFormData.append('file', {
+          uri: preview,
+          name: 'image.jpg',
+          type: 'image/jpeg',
+        } as any)
+
+        const uploadResponse = await api.post('/upload', uploadFormData)
+
+        coverUrl = uploadResponse.data.fileUrl
+      }
+
+      await api.post(
+        '/memories',
+        {
+          content,
+          isPublic,
+          coverUrl,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
+
+      router.push('/memories')
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
@@ -65,9 +104,9 @@ export default function NewMemories() {
           className="h-32 items-center justify-center rounded-lg border border-dashed border-gray-500 bg-black/20"
         >
           {preview ? (
-            // eslint-disable-next-line jsx-a11y/alt-text
             <Image
               source={{ uri: preview }}
+              alt=""
               className="h-full w-full rounded-lg object-cover"
             />
           ) : (
