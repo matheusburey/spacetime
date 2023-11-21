@@ -1,14 +1,16 @@
-import { View, Text, TouchableOpacity, Switch, Image } from 'react-native'
+import { View, Text, TouchableOpacity, Image } from 'react-native'
 import Icon from '@expo/vector-icons/Feather'
-import * as ImagePicker from 'expo-image-picker'
 import SpacetimeLogo from '../src/assets/spacetime-logo.svg'
 import { Link, router } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useEffect, useState } from 'react'
-import { ScrollView, TextInput } from 'react-native-gesture-handler'
+import { ScrollView } from 'react-native-gesture-handler'
 import * as SecureStore from 'expo-secure-store'
 import dayjs from 'dayjs'
+import ptBr from 'dayjs/locale/pt-br'
 import { api } from '../src/lib/api'
+
+dayjs.locale(ptBr)
 
 interface Memory {
   coverUrl: string

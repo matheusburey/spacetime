@@ -27,12 +27,12 @@ export default function App() {
   )
 
   useEffect(() => {
-    console.log(makeRedirectUri({ scheme: 'spacetime' }))
     if (response?.type === 'success') {
       const { code } = response.params
       api
         .post('/register', {
           code,
+          origin: 'mobile',
         })
         .then((response) => {
           const { token } = response.data
